@@ -27,6 +27,7 @@ struct wlr_seat_client {
 	// lists of wl_resource
 	struct wl_list resources;
 	struct wl_list pointers;
+	struct wl_list relative_pointers_v1;
 	struct wl_list keyboards;
 	struct wl_list touches;
 	struct wl_list data_devices;
@@ -303,6 +304,19 @@ void wlr_seat_pointer_clear_focus(struct wlr_seat *wlr_seat);
  */
 void wlr_seat_pointer_send_motion(struct wlr_seat *wlr_seat, uint32_t time,
 		double sx, double sy);
+
+/**
+ * Send relative motion events to the surface with pointer focus. Coordinates
+ * for the motion event are relative to current pointer location, both
+ * accelerated and unaccelerated. Compositors should use
+ * `wlr_seat_pointer_notify_relative_motion()` to send relative motion events
+ * to respect relative pointer requests by clients.
+ *
+ * Note that the timestamp is 64 bit, split into high 32 bits and low 32 bits.
+ */
+void wlr_seat_pointer_notify_relative_motion(struct wlr_seat *wlr_seat,
+		uint64_t time, double dx, double dy,
+		double dx_unaccel, double dy_unaccel);
 
 /**
  * Send a button event to the surface with pointer focus. Coordinates for the
